@@ -7,11 +7,11 @@ import { usePathname } from "next/navigation"
 const links = [
     {
         name: "Home",
-        href: "/home"
+        href: "/"
     },
     {
         name: "Library",
-        href: "/home/library"
+        href: "/library"
     }
 ]
 
