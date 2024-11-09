@@ -17,7 +17,7 @@ export default function Library() {
                 <div className="flex justify-between items-center mb-8">
                     <h2 className="text-3xl font-serif">Books</h2>
                     <Button asChild className="bg-customGreen text-black hover:bg-green-150">
-                        <Link href={"/home/addBook"}>
+                        <Link href={"/addBook"}>
                             <span>Add Books</span>
                         </Link>
                     </Button>
