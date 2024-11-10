@@ -30,7 +30,7 @@ export default function Layout({children}: {children : ReactNode}) {
                         <Navigation />
                     </nav>
 
-                    <h1 className="text-3xl font-serif">EShelf</h1>
+                    <h1 className="absolute left-1/2 -translate-x-1/2 text-3xl font-serif">EShelf</h1>
 
                     <div className="flex pl-2 pr-2 p-1 rounded-full border items-center space-x-2">
                         <span className="text-sm">Shahma Ansari</span>
