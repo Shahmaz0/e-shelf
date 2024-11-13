@@ -33,20 +33,20 @@ export default function Library() {
                             }`}
                         >
                             <div className="w-16 h-16 bg-white rounded border flex-shrink-0"/>
-                            <div className="flex-1 min-w-0">
-                                <div className="flex items-start justify-between">
+                            <div className="flex-1 min-w-0 ">
+                                <div className="flex items-center items-start justify-between">
                                     <div>
                                         <h3 className="font-medium">{book.title}</h3>
                                         <p className="text-sm text-gray-600">{book.description}</p>
                                         <p className="text-sm italic text-gray-500">by {book.author}</p>
-                                    </div>
+                                    </div>  
                                     <div className="flex items-center space-x-2">
-                                        {index === 0 && (
-                                            <>
-                                                <span className="text-sm text-customGreen">{book.type}</span>
-                                                <span className="text-sm text-customGreen">{book.date}</span>
-                                            </>
-                                        )}
+                                        <span className="text-sm text-black">{book.type}</span>
+                                    </div>
+                                    <div>
+                                        <span className="text-sm text-black">{book.date}</span>
+                                    </div>
+                                    <div>
                                         <Button variant="ghost" size="icon">
                                             <Pencil className="h-4 w-4"/>
                                         </Button>
@@ -81,3 +81,5 @@ export default function Library() {
         </div>
     );
 }
+
+
