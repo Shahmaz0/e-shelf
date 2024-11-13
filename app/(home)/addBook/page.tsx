@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -25,21 +25,21 @@ export default function addBookRoute() {
                 <CardContent className="mt-4">
                     <div className="flex flex-col gap-2 mt-4">
                         <Label className="font-serif text-2xl" >Book Name</Label>
-                        <Input className="bg-customGreen"/>
+                        <Input className="h-12 bg-customGreen"/>
                     </div>
                     <div className="flex flex-col gap-2 mt-4">
                         <Label className="font-serif text-2xl" >Author Name</Label>
-                        <Input className="bg-customGrey"/>
+                        <Input className="h-12 bg-customGrey"/>
                     </div>
                     <div className="flex flex-col gap-2 mt-4">
                         <Label className="font-serif text-2xl" >Descriptions</Label>
                         <Textarea
-                        className="bg-customGreen"></Textarea>
+                        className="h-20 bg-customGreen"></Textarea>
                     </div>
                     <div className="flex flex-col gap-2 mt-4">
                         <Label className="font-serif text-2xl" >Category</Label>
                         <Select>
-                                <SelectTrigger className="bg-customGreen">
+                                <SelectTrigger className="h-14 bg-customGreen">
                                     <SelectValue placeholder="Select"></SelectValue>
                                 </SelectTrigger>
                                 <SelectContent>
@@ -52,10 +52,12 @@ export default function addBookRoute() {
                     </div>
                     <div className="flex flex-col gap-2 mt-4">
                     <Label className="font-serif text-2xl" >File</Label>
-                    <Textarea></Textarea>
+                    <Textarea className="h-24" ></Textarea>
                     </div>
-                    
                 </CardContent>
+                <CardFooter className="flex justify-end">
+                    <Button className="bg-customGreen text-black hover:bg-customGreen" >Add Book</Button>
+                </CardFooter>
             </Card>
         </form>
         </main>
