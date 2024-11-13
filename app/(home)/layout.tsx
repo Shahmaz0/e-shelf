@@ -6,7 +6,6 @@ import {Navigation} from "@/app/components/Navigation";
 export default function Layout({children}: {children : ReactNode}) {
     return (
         <div className="min-h-screen bg-background">
-            {/* Header */}
             <header className="border-b">
                 <div className="container mx-auto px-4 h-16 flex items-center justify-between">
                     <nav className="flex items-center space-x-10">
