@@ -7,7 +7,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { ChevronLeft } from "lucide-react";
 import Link from "next/link";
 
-
 export default function addBookRoute() {
     return (
         <main className="container mx-auto px-4 py-10 ">
@@ -55,7 +54,10 @@ export default function addBookRoute() {
                     <Textarea className="h-24" ></Textarea>
                     </div>
                 </CardContent>
-                <CardFooter className="flex justify-end">
+                <CardFooter className="flex gap-4 justify-end">
+                    <Link href={"/library"}>
+                        <Button className="bg-customGrey text-black hover:bg-customGreen" >cancel</Button>
+                    </Link>
                     <Button className="bg-customGreen text-black hover:bg-customGreen" >Add Book</Button>
                 </CardFooter>
             </Card>
