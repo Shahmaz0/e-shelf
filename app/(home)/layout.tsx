@@ -3,10 +3,7 @@ import {ReactNode} from "react";
 
 import {Navigation} from "@/app/components/Navigation";
 import { getKindeServerSession, LoginLink, RegisterLink, LogoutLink } from "@kinde-oss/kinde-auth-nextjs/server";
-import { redirect } from "next/navigation";
-import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuItem } from "@/components/ui/dropdown-menu"
-import { CircleUser } from "lucide-react";
 
 
 
