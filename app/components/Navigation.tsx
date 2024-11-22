@@ -20,6 +20,7 @@ const links = [
 
 export function Navigation() {
     const pathName = usePathname();
+
     return (
         <>
             {links.map((link) => (

@@ -4,6 +4,7 @@ import {ReactNode} from "react";
 import {Navigation} from "@/app/components/Navigation";
 import { getKindeServerSession, LoginLink, RegisterLink, LogoutLink } from "@kinde-oss/kinde-auth-nextjs/server";
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuItem } from "@/components/ui/dropdown-menu"
+import Link from "next/link";
 
 
 
@@ -34,7 +35,19 @@ export default async function Layout({children}: {children : ReactNode}) {
                                 />
                             </svg>
                         </button>
-                        <Navigation />
+                        
+                        {user ? (
+                            <Navigation />
+                        ): (
+                            <Link
+                                key="/"
+                                href="/"
+                                >
+                                    Home
+                                </Link>
+                        )
+                    }
+                        
                     </nav>
 
                     <h1 className="absolute left-1/2 -translate-x-1/2 text-3xl font-serif">EShelf</h1>
