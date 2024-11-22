@@ -18,14 +18,15 @@ model User {
 model book {
   id          String       @unique @default(uuid())
   name        String
+  authorName  String
   description String
-  image       String
+  images      String[]
   category    bookCategory
   createdAt   DateTime     @default(now())
 }
 
 enum bookCategory {
-  Fiction
-  NonFiction
-  manga
+  Manga
+  Literature
+  Comic
 }

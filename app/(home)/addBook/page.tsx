@@ -1,67 +1,149 @@
+"use client"
+import { createBook } from "@/app/actions";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { ChevronLeft } from "lucide-react";
+import { ChevronLeft, XIcon } from "lucide-react";
 import Link from "next/link";
+import { useFormState } from "react-dom";
+import { useForm } from "@conform-to/react";
+import { parseWithZod } from "@conform-to/zod";
+import { bookSchema } from "@/app/lib/zodSchemas";
+import { act, useActionState, useState } from "react";
+import { UploadDropzone, UploadButton } from "@/app/lib/uploadthing";
+import Image from "next/image";
 
 export default function addBookRoute() {
-    return (
-        <main className="container mx-auto px-4 py-10 ">
-            <form action="">
-            <div className="flex items-center gap-4">
-                <Button variant="outline" size="icon" asChild>
-                    <Link href="/library">
-                        <ChevronLeft />
-                    </Link>
-                </Button>
-                <h1 className="text-3xl font-serif tracking-tight">Add Book</h1>
-            </div>
+    const [images, setImages] = useState<string[]>([])
+    const [lastResult, action] = useActionState(createBook, undefined);
+    const [form, fields] = useForm({
+        lastResult,
 
-            <Card className="mt-5">
-                <CardContent className="mt-4">
-                    <div className="flex flex-col gap-2 mt-4">
-                        <Label className="font-serif text-2xl" >Book Name</Label>
-                        <Input className="h-12 bg-customGreen"/>
-                    </div>
-                    <div className="flex flex-col gap-2 mt-4">
-                        <Label className="font-serif text-2xl" >Author Name</Label>
-                        <Input className="h-12 bg-customGrey"/>
-                    </div>
-                    <div className="flex flex-col gap-2 mt-4">
-                        <Label className="font-serif text-2xl" >Descriptions</Label>
-                        <Textarea
-                        className="h-20 bg-customGreen"></Textarea>
-                    </div>
-                    <div className="flex flex-col gap-2 mt-4">
-                        <Label className="font-serif text-2xl" >Category</Label>
-                        <Select>
-                                <SelectTrigger className="h-14 bg-customGreen">
-                                    <SelectValue placeholder="Select"></SelectValue>
-                                </SelectTrigger>
-                                <SelectContent>
-                                        <SelectItem key="1" value="category1">Novel</SelectItem>
-                                        <SelectItem key="2" value="category2">Manga</SelectItem>
-                                        <SelectItem key="3" value="category3">Literature</SelectItem>
-                                        <SelectItem key="4" value="category4">Comic</SelectItem>
-                                </SelectContent>
-                             </Select>
-                    </div>
-                    <div className="flex flex-col gap-2 mt-4">
-                    <Label className="font-serif text-2xl" >File</Label>
-                    <Textarea className="h-24" ></Textarea>
-                    </div>
-                </CardContent>
-                <CardFooter className="flex gap-4 justify-end">
-                    <Link href={"/library"}>
-                        <Button className="bg-customGrey text-black hover:bg-customGreen" >cancel</Button>
-                    </Link>
-                    <Button className="bg-customGreen text-black hover:bg-customGreen" >Add Book</Button>
-                </CardFooter>
-            </Card>
+        onValidate({ formData }) {
+            return parseWithZod(formData, { schema: bookSchema })
+        },
+
+        shouldValidate: "onBlur",
+        shouldRevalidate: "onInput"
+    })
+    return (
+        <form id={form.id} onSubmit={form.onSubmit} action={action}>
+            <main className="container mx-auto px-4 py-10 ">
+                <div className="flex items-center gap-4">
+                    <Button variant="outline" size="icon" asChild>
+                        <Link href="/library">
+                            <ChevronLeft />
+                        </Link>
+                    </Button>
+                    <h1 className="text-3xl font-serif tracking-tight">Add Book</h1>
+                </div>
+
+                <Card className="mt-5">
+                    <CardContent className="mt-4">
+                        <div className="flex flex-col gap-2 mt-4">
+                            <Label className="font-serif text-2xl" >Book Name</Label>
+                            <Input 
+                                type="text"
+                                key={fields.name.key}
+                                name={fields.name.name}
+                                defaultValue={fields.name.initialValue}
+                                className="h-12 bg-customGreen"
+                                placeholder="Enter Book Name"
+                            />
+                            <p className="text-red-500">{fields.name.errors}</p>
+
+                        </div>
+                        <div className="flex flex-col gap-2 mt-4">
+                            <Label className="font-serif text-2xl" >Author Name</Label>
+                            <Input 
+                                type="text"
+                                key={fields.authorName.key}
+                                name={fields.authorName.name}
+                                defaultValue={fields.authorName.initialValue}
+                                className="h-12 bg-customGrey"
+                                placeholder="Enter Author Name"
+                            />
+                            <p className="text-red-500">{fields.authorName.errors}</p>
+
+                        </div>
+                        <div className="flex flex-col gap-2 mt-4">
+                            <Label className="font-serif text-2xl" >Descriptions</Label>
+                            <Textarea
+                                key={fields.description.key}
+                                name={fields.description.name}
+                                defaultValue={fields.description.initialValue}
+                                className="h-20 bg-customGreen"
+                                placeholder="Write your descriptions right here..."
+                                >
+                            </Textarea>
+                            <p className="text-red-500">{fields.description.errors}</p>
+                        </div>
+                        <div className="flex flex-col gap-2 mt-4">
+                            <Label className="font-serif text-2xl" >Category</Label>
+                            <Select key={fields.category.key} name={fields.category.name} defaultValue={fields.category.initialValue}>
+                                    <SelectTrigger className="h-14 bg-customGrey">
+                                        <SelectValue placeholder="Select"></SelectValue>
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                            <SelectItem value="Manga">Manga</SelectItem>
+                                            <SelectItem value="Literature">Literature</SelectItem>
+                                            <SelectItem value="Comic">Comic</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                                <p className="text-red-500">{fields.category.errors}</p>
+                        </div>
+                        <div className="flex flex-col gap-2 mt-4">
+                            <Label className="font-serif text-2xl" >File</Label>
+                            {/* <Input
+                                type="hidden"
+                                value={images}
+                                key={fields.image.id}
+                                name={fields.image.name}
+                                defaultValue={fields.image.initialValue}
+                            /> */}
+
+                            {images.length > 0 ? (
+                                <div>
+                                    {images.map((image, index) => (
+                                        <div key={index} className="relative w-[100px] h-[100px]">
+                                            <Image 
+                                                height={100} 
+                                                width={100} 
+                                                src={image} 
+                                                alt="Book Image" 
+                                                className="w-full h-full object-cover rounded-lg border"
+                                            />
+
+                                            <button 
+                                                type="button" 
+                                                className="absolute -top-3 -right-3 text-red-500 p-2 bg-white rounded-full">
+                                                <XIcon className="w-3 h-3" />
+                                            </button>
+                                        </div>
+                                    ))}
+                                </div>
+                            ) : (
+                                    <UploadDropzone endpoint="imageUploader" onClientUploadComplete={(res) => {
+                                        setImages(res.map( (r) => r.url ))
+                                    }}
+                                    onUploadError={() => {
+                                        alert("Something went wrong")
+                                    }}
+                                />
+                            )}
+                        </div>
+                    </CardContent>
+                    <CardFooter className="flex gap-4 justify-end">
+                        <Link href={"/library"}>
+                            <Button className="bg-customGrey text-black hover:bg-customGreen" >cancel</Button>
+                        </Link>
+                        <Button className="bg-customGreen text-black hover:bg-customGreen" >Add Book</Button>
+                    </CardFooter>
+                </Card>
+            </main>
         </form>
-        </main>
     );
 }
