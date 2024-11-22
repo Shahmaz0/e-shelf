@@ -2,15 +2,25 @@ import {Button} from "@/components/ui/button";
 import Link from "next/link";
 import {Menu, Pencil} from "lucide-react";
 import {DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger} from "@/components/ui/dropdown-menu";
+import prisma from "@/app/lib/db";
+import Image from "next/image";
 
-export default function Library() {
-    const books = Array(8).fill({
-        title: "One Piece",
-        description: "one of the best manga that is ever written",
-        author: "oda",
-        type: "Manga",
-        date: "10 nov"
-    })
+async function getData() {
+    const data = await prisma.book.findMany({
+        orderBy: {
+            id: 'desc'
+        }
+    });
+
+    return data;
+}
+
+
+
+export default async function Library() {
+
+    const data = await getData();
+
     return (
         <div>
             <main className="container mx-auto px-4 py-8">
@@ -25,31 +35,28 @@ export default function Library() {
 
                 {/* Book List */}
                 <div className="space-y-4">
-                    {books.map((book, index) => (
+                    {data.map((book, index) => (
                         <div
                             key={index}
-                            className={`p-4 rounded-lg flex items-start space-x-4 ${
+                            className={`p-4 rounded-lg flex items-center space-x-4 ${
                                 index % 2 === 0 ? 'bg-customGreen' : 'bg-customGrey'
                             }`}
                         >
-                            <div className="w-16 h-16 bg-white rounded border flex-shrink-0"/>
+                            <Image alt="Book Image" src={book.images[0]} className="rounded-md object-cover w-16 h-16 " width={100} height={100} />
                             <div className="flex-1 min-w-0 ">
                                 <div className="flex items-center items-start justify-between">
                                     <div>
-                                        <h3 className="font-medium">{book.title}</h3>
+                                        <h3 className="font-medium">{book.name}</h3>
                                         <p className="text-sm text-gray-600">{book.description}</p>
-                                        <p className="text-sm italic text-gray-500">by {book.author}</p>
+                                        <p className="text-sm italic text-gray-500">by {book.authorName}</p>
                                     </div>  
-                                    <div className="flex items-center space-x-2">
-                                        <span className="text-sm text-black">{book.type}</span>
+                                    {/* <div className="flex items-center space-x-2">
+                                        <span className="text-sm text-black">{book.category}</span>
+                                    </div> */}
+                                    <div>
+                                        {/* <span className="text-sm text-black">{book.createdAt}</span> */}
                                     </div>
                                     <div>
-                                        <span className="text-sm text-black">{book.date}</span>
-                                    </div>
-                                    <div>
-                                        <Button variant="ghost" size="icon">
-                                            <Pencil className="h-4 w-4"/>
-                                        </Button>
                                         <DropdownMenu>
                                             <DropdownMenuTrigger asChild>
                                                 <Button variant="ghost" size="icon">
@@ -70,13 +77,19 @@ export default function Library() {
                 </div>
 
                 {/* Pagination */}
-                <div className="flex justify-center space-x-2 mt-8">
-                    <Button variant="ghost" className="text-green-600">1</Button>
-                    <Button variant="ghost">2</Button>
-                    <Button variant="ghost">3</Button>
-                    <span className="px-2">...</span>
-                    <Button variant="ghost">Next Page</Button>
-                </div>
+                
+                {data.length > 4 ? (
+                    <div className="flex justify-center space-x-2 mt-8">
+                        <Button variant="ghost" className="text-green-600">1</Button>
+                        <Button variant="ghost">2</Button>
+                        <Button variant="ghost">3</Button>
+                        <span className="px-2">...</span>
+                        <Button variant="ghost">Next Page</Button>
+                    </div>
+                ): (
+                    <div></div>
+                )}
+                
             </main>
         </div>
     );

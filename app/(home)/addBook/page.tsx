@@ -15,6 +15,7 @@ import { bookSchema } from "@/app/lib/zodSchemas";
 import { act, useActionState, useState } from "react";
 import { UploadDropzone, UploadButton } from "@/app/lib/uploadthing";
 import Image from "next/image";
+import { SubmitButton } from "@/app/components/SubmitButton";
 
 export default function addBookRoute() {
     const [images, setImages] = useState<string[]>([])
@@ -29,6 +30,11 @@ export default function addBookRoute() {
         shouldValidate: "onBlur",
         shouldRevalidate: "onInput"
     })
+
+    const handleDelete = (index: number) => {
+        setImages(images.filter((_, i) => i !== index))
+        
+    }
     return (
         <form id={form.id} onSubmit={form.onSubmit} action={action}>
             <main className="container mx-auto px-4 py-10 ">
@@ -97,13 +103,13 @@ export default function addBookRoute() {
                         </div>
                         <div className="flex flex-col gap-2 mt-4">
                             <Label className="font-serif text-2xl" >File</Label>
-                            {/* <Input
+                            <Input
                                 type="hidden"
                                 value={images}
-                                key={fields.image.id}
-                                name={fields.image.name}
-                                defaultValue={fields.image.initialValue}
-                            /> */}
+                                key={fields.images.id}
+                                name={fields.images.name}
+                                defaultValue={fields.images.initialValue as any}
+                            />
 
                             {images.length > 0 ? (
                                 <div>
@@ -118,6 +124,7 @@ export default function addBookRoute() {
                                             />
 
                                             <button 
+                                                onClick={() => handleDelete(index)}
                                                 type="button" 
                                                 className="absolute -top-3 -right-3 text-red-500 p-2 bg-white rounded-full">
                                                 <XIcon className="w-3 h-3" />
@@ -134,13 +141,15 @@ export default function addBookRoute() {
                                     }}
                                 />
                             )}
+
+                            <p className="text-red-500">{fields.images.errors}</p>
                         </div>
                     </CardContent>
                     <CardFooter className="flex gap-4 justify-end">
                         <Link href={"/library"}>
                             <Button className="bg-customGrey text-black hover:bg-customGreen" >cancel</Button>
                         </Link>
-                        <Button className="bg-customGreen text-black hover:bg-customGreen" >Add Book</Button>
+                        <SubmitButton />
                     </CardFooter>
                 </Card>
             </main>
