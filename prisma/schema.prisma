@@ -22,7 +22,6 @@ model book {
   description String
   images      String[]
   category    bookCategory
-  pdfUrl      String
   createdAt   DateTime     @default(now())
 }
 
