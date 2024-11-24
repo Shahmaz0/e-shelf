@@ -1,95 +1,85 @@
 "use server";
 
-import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
-import { redirect } from "next/navigation";
-import { parseWithZod } from "@conform-to/zod"
-import { bookSchema } from "./lib/zodSchemas";
-import prisma from "./lib/db";
-// export async function createBook(prevState: unknown, formData: FormData) {
-//     const {getUser} = getKindeServerSession();
-//     const user = await getUser();
+import cloudinary from './lib/cloudinary';
+import prisma from './lib/db';
+import { parseWithZod } from '@conform-to/zod';
+import { bookSchema } from './lib/zodSchemas';
+import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server';
+import { redirect } from 'next/navigation';
 
-//     if (!user || user.email !== "shahmaansari8@gmail.com") {
-//         return redirect("/")
-//     }
+function uploadPDFToCloudinary(file: File): Promise<string> {
+    return new Promise((resolve, reject) => {
+        const stream = cloudinary.uploader.upload_stream(
+            {
+                resource_type: 'raw', // Set the resource type to "raw" for non-image files
+                folder: 'book_pdfs', // Replace with your desired Cloudinary folder
+            },
+            (error, result) => {
+                if (error) {
+                    reject(new Error('Cloudinary PDF upload failed: ' + error.message));
+                } else if (result) {
+                    resolve(result.secure_url); // Access secure_url from the result
+                }
+            }
+        );
 
-
-//     const submission = parseWithZod(formData, {
-//         schema: bookSchema
-//     })
-
-//     if (submission.status !== "success") {
-//         return submission.reply();
-//     }
-
-//     const flattenUrls = submission.value.images.flatMap((urlString) => 
-//         urlString.split(",").map((url) => url.trim())
-//     )
-
-//     await prisma.book.create({
-//         data: {
-//             name: submission.value.name,
-//             authorName: submission.value.authorName,
-//             description: submission.value.description,
-//             images: flattenUrls,
-//             category: submission.value.category,
-//             pdfUrl: submission.value.pdfUrl as string,
-//         }
-//     })
-
-//     redirect("/library")
-//  }
-
-import { uploadPDFToCloudinary } from '@/app/lib/cloudinary';
+        const reader = file.stream().getReader();
+        const readChunk = async () => {
+            const { done, value } = await reader.read();
+            if (done) {
+                stream.end(); // Close the stream
+            } else {
+                stream.write(value); // Write the chunk to the stream
+                readChunk(); // Continue reading
+            }
+        };
+        readChunk();
+    });
+}
 
 export async function createBook(prevState: unknown, formData: FormData) {
-  const { getUser } = getKindeServerSession();
-  const user = await getUser();
-  
-  if (!user || user.email !== "shahmaansari8@gmail.com") {
-    return redirect("/");
-  }
+    const { getUser } = getKindeServerSession();
+    const user = await getUser();
 
-  // Get the PDF file from formData
-  const pdfFile = formData.get('pdfFile') as File;
-  let pdfUrl = '';
-
-  if (pdfFile) {
-    try {
-      // Convert File to Buffer
-      const pdfBuffer = Buffer.from(await pdfFile.arrayBuffer());
-      
-      // Upload to Cloudinary
-      const cloudinaryResponse = await uploadPDFToCloudinary(pdfBuffer) as any;
-      pdfUrl = cloudinaryResponse.secure_url;
-    } catch (error) {
-      console.error('Error uploading PDF:', error);
-      return { error: 'Failed to upload PDF file' };
+    if (!user || user.email !== 'shahmaansari8@gmail.com') {
+        return redirect('/');
     }
-  }
 
-  const submission = parseWithZod(formData, {
-    schema: bookSchema,
-  });
+    const submission = parseWithZod(formData, {
+        schema: bookSchema,
+    });
 
-  if (submission.status !== "success") {
-    return submission.reply();
-  }
+    if (submission.status !== 'success') {
+        return submission.reply();
+    }
 
-  const flattenUrls = submission.value.images.flatMap((urlString) => 
-    urlString.split(",").map((url) => url.trim())
-  );
+    // Handle PDF Upload
+    const pdfFile = formData.get('pdfFile');
+    let pdfUrl = '';
 
-  await prisma.book.create({
-    data: {
-      name: submission.value.name,
-      authorName: submission.value.authorName,
-      description: submission.value.description,
-      images: flattenUrls,
-      category: submission.value.category,
-      pdfUrl: pdfUrl, // Add this new field
-    },
-  });
+    if (pdfFile instanceof File) {
+        try {
+            pdfUrl = await uploadPDFToCloudinary(pdfFile);
+        } catch (error) {
+            throw new Error('PDF upload failed');
+        }
+    }
 
-  redirect("/library");
+    const flattenUrls = submission.value.images.flatMap((urlString) =>
+        urlString.split(',').map((url) => url.trim())
+    );
+
+    // Save to database
+    await prisma.book.create({
+        data: {
+            name: submission.value.name,
+            authorName: submission.value.authorName,
+            description: submission.value.description,
+            images: flattenUrls,
+            category: submission.value.category,
+            pdfUrl,
+        },
+    });
+
+    redirect('/library');
 }
