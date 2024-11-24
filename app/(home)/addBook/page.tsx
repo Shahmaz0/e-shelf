@@ -55,7 +55,7 @@ export default function addBookRoute() {
                                 type="text"
                                 key={fields.name.key}
                                 name={fields.name.name}
-                                defaultValue={fields.name.initialValue}
+                                defaultValue={fields.name.initialValue as string}
                                 className="h-12 bg-customGreen"
                                 placeholder="Enter Book Name"
                             />
@@ -68,7 +68,7 @@ export default function addBookRoute() {
                                 type="text"
                                 key={fields.authorName.key}
                                 name={fields.authorName.name}
-                                defaultValue={fields.authorName.initialValue}
+                                defaultValue={fields.authorName.initialValue as string}
                                 className="h-12 bg-customGrey"
                                 placeholder="Enter Author Name"
                             />
@@ -80,7 +80,7 @@ export default function addBookRoute() {
                             <Textarea
                                 key={fields.description.key}
                                 name={fields.description.name}
-                                defaultValue={fields.description.initialValue}
+                                defaultValue={fields.description.initialValue as string}
                                 className="h-20 bg-customGreen"
                                 placeholder="Write your descriptions right here..."
                                 >
@@ -89,7 +89,7 @@ export default function addBookRoute() {
                         </div>
                         <div className="flex flex-col gap-2 mt-4">
                             <Label className="font-serif text-2xl" >Category</Label>
-                            <Select key={fields.category.key} name={fields.category.name} defaultValue={fields.category.initialValue}>
+                            <Select key={fields.category.key} name={fields.category.name} defaultValue={fields.category.initialValue as string}>
                                     <SelectTrigger className="h-14 bg-customGrey">
                                         <SelectValue placeholder="Select"></SelectValue>
                                     </SelectTrigger>
@@ -102,7 +102,7 @@ export default function addBookRoute() {
                                 <p className="text-red-500">{fields.category.errors}</p>
                         </div>
                         <div className="flex flex-col gap-2 mt-4">
-                            <Label className="font-serif text-2xl" >File</Label>
+                            <Label className="font-serif text-2xl" >Cover Image</Label>
                             <Input
                                 type="hidden"
                                 value={images}
@@ -143,6 +143,15 @@ export default function addBookRoute() {
                             )}
 
                             <p className="text-red-500">{fields.images.errors}</p>
+                        </div>
+
+                        <div>
+                        <input 
+                        type="file" 
+                        name="pdfFile" 
+                        accept="application/pdf" 
+                        required 
+                    />
                         </div>
                     </CardContent>
                     <CardFooter className="flex gap-4 justify-end">
