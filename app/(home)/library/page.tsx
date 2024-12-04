@@ -45,7 +45,6 @@ export default async function Library({
         currentPage: page 
     } = await getData(currentPage);
 
-    const data = await getData();
 
     return (
         <div>
