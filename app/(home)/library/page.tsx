@@ -5,19 +5,45 @@ import {DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger
 import prisma from "@/app/lib/db";
 import Image from "next/image";
 
-async function getData() {
-    const data = await prisma.book.findMany({
-        orderBy: {
-            id: 'desc'
-        }
-    });
+async function getData(page: number = 1, pageSize: number = 4) {
+    const skip = ( page - 1 ) * pageSize;
 
-    return data;
+    const [books, totalBooks] = await Promise.all([
+        prisma.book.findMany({
+            orderBy: {
+                id: 'desc'
+            },
+            skip,
+            take: pageSize
+        }),
+        prisma.book.count()
+    ])
+
+    return {
+        books,
+        totalBooks,
+        currentPage: page,
+        pageSize,
+        totalPages: Math.ceil(totalBooks / pageSize)
+    }
 }
 
 
 
-export default async function Library() {
+export default async function Library({
+    searchParams
+}: {
+    searchParams: { page?: string }
+}) {
+
+    // Convert page to number, default to 1 if not provided
+    const currentPage = searchParams.page ? parseInt(searchParams.page) : 1;
+
+    const { 
+        books, 
+        totalPages, 
+        currentPage: page 
+    } = await getData(currentPage);
 
     const data = await getData();
 
@@ -27,7 +53,7 @@ export default async function Library() {
                 <div className="flex justify-between items-center mb-8">
                     <h2 className="text-3xl font-serif">Books</h2>
                     <Button asChild className="bg-customGreen text-black hover:bg-green-150">
-                        <Link href={"/addBook"}>
+                        <Link href={"/library/addBook"}>
                             <span>Add Books</span>
                         </Link>
                     </Button>
@@ -35,7 +61,7 @@ export default async function Library() {
 
                 {/* Book List */}
                 <div className="space-y-4">
-                    {data.map((book, index) => (
+                    {books.map((book, index) => (
                         <div
                             key={index}
                             className={`p-4 rounded-lg flex items-center space-x-4 ${
@@ -77,8 +103,46 @@ export default async function Library() {
                 </div>
 
                 {/* Pagination */}
-                
-                {data.length > 4 ? (
+
+                {totalPages > 1 && (
+                    <div className="flex justify-center space-x-2 mt-8">
+                        {page > 1 && (
+                            <Button asChild variant="ghost" className="bg-customGreen">
+                                <Link href={`/library?page=${page - 1}`}>
+                                    Previous
+                                </Link>
+                            </Button>
+                        )}
+
+                        {[...Array(totalPages)].map((_, i) => {
+                            const pageNumber = i + 1;
+                            return (
+                                <Button 
+                                    key={pageNumber} 
+                                    asChild 
+                                    variant={pageNumber === page ? "secondary" : "ghost"}
+                                    className={pageNumber === page 
+                                        ? "bg-customGreen text-black" 
+                                        : "text-black"
+                                    }
+                                >
+                                    <Link href={`/library?page=${pageNumber}`}>
+                                        {pageNumber}
+                                    </Link>
+                                </Button>
+                            );
+                        })}
+
+                        {page < totalPages && (
+                            <Button asChild variant="secondary" className="text-black bg-customGreen">
+                                <Link href={`/library?page=${page + 1}`}>
+                                    Next
+                                </Link>
+                            </Button>
+                        )}
+                    </div>
+                )} 
+                {/* {data.length > 4 ? (
                     <div className="flex justify-center space-x-2 mt-8">
                         <Button variant="ghost" className="text-green-600">1</Button>
                         <Button variant="ghost">2</Button>
@@ -88,7 +152,7 @@ export default async function Library() {
                     </div>
                 ): (
                     <div></div>
-                )}
+                )} */}
                 
             </main>
         </div>
