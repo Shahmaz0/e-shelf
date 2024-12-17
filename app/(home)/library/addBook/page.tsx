@@ -1,21 +1,19 @@
 "use client"
 import { createBook } from "@/app/actions";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardFooter } from "@/components/ui/card";
+import { Card, CardContent} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { ChevronLeft, XIcon } from "lucide-react";
 import Link from "next/link";
-import { useFormState } from "react-dom";
 import { useForm } from "@conform-to/react";
 import { parseWithZod } from "@conform-to/zod";
 import { bookSchema } from "@/app/lib/zodSchemas";
-import { act, useActionState, useState } from "react";
-import { UploadDropzone, UploadButton } from "@/app/lib/uploadthing";
+import { useActionState, useState } from "react";
+import { UploadDropzone} from "@/app/lib/uploadthing";
 import Image from "next/image";
-import { SubmitButton } from "@/app/components/SubmitButton";
 
 export default function addBookRoute() {
     const [images, setImages] = useState<string[]>([])
@@ -141,7 +139,6 @@ export default function addBookRoute() {
                                     }}
                                 />
                             )}
-
                             <p className="text-red-500">{fields.images.errors}</p>
                         </div>
                     </CardContent>
