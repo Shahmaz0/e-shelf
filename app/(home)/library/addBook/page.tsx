@@ -144,18 +144,7 @@ export default function addBookRoute() {
 
                             <p className="text-red-500">{fields.images.errors}</p>
                         </div>
-                        {/* Upload File Cloudinary */}
-                        <div className="flex flex-col gap-2 mt-4">
-                            <Label className="font-serif text-2xl">Upload PDF</Label>
-                            <Input type="file" name="pdfFile" accept="application/pdf" required />
-                        </div>
                     </CardContent>
-                    <CardFooter className="flex gap-4 justify-end">
-                        <Link href={"/library"}>
-                            <Button className="bg-customGrey text-black hover:bg-customGreen" >cancel</Button>
-                        </Link>
-                        <SubmitButton />
-                    </CardFooter>
                 </Card>
             </main>
         </form>
